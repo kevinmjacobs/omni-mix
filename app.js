@@ -1,59 +1,39 @@
 import express from 'express';
-const hostname = '127.0.0.1';
-const port = 3000;
+import createError from 'http-errors';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import logger from 'morgan';
 
-const app = express();
-app.set('view engine', 'ejs');
+import ROUTER from './routes/index.js';
 
-const todos = [{
-    todoId: '1',
-    todoTask: 'Walk the dog',
-  },
-  {
-    todoId: '2',
-    todoTask: 'Take out trash',
-  },
-  {
-    todoId: '3',
-    todoTask: 'Vacuum',
-  }
-];
+const APP = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+APP.set('views', path.join(__dirname, 'views'));
+APP.set('view engine', 'ejs');
 
-app.get('/', (req, res) => {
-  res.render('index', {
-    data: todos,
-  });
+APP.use(logger("dev"));
+APP.use(express.json());
+APP.use(express.urlencoded({extended: true}));
+APP.use(cookieParser());
+APP.use(express.static(path.join(__dirname, 'public')));
+
+APP.use('/', ROUTER);
+
+APP.use((req, res, next) => {
+  next(createError(404));
 });
 
-app.post("/", (req, res) => {
-  const inputTodoId = todos.length + 1;
-  const inputTodoTask = req.body.todoTask;
+APP.use((err, req, res, next) => {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  todos.push({
-    todoId: inputTodoId,
-    todoTask: inputTodoTask
-  });
-
-  res.render("index", {
-    data: todos,
-  });
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
 
-app.post("/delete", (req, res) => {
-  var requestedtodoId = req.body.todoId;
-  var j = 0;
-  todos.forEach((todo) => {
-    j = j + 1;
-    if (todo.todoId === requestedtodoId) {
-      todos.splice(j - 1, 1);
-    }
-  });
-  res.redirect("/");
-});
-
-app.listen(3000, (req, res) => {
-  console.log("App is running on port 3000");
-});
+export default APP;
