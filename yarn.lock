@@ -1627,11 +1627,6 @@ sorted-object@2.0.1:
   resolved "https://registry.npmjs.org/sorted-object/-/sorted-object-2.0.1.tgz"
   integrity sha512-oKAAs26HeTu3qbawzUGCkTOBv/5MRrcuJyRWwbfEnWdpXnXsj+WEM3HTvarV73tMcf9uBEZNZoNDVRL62VLxzA==
 
-sqlite@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.npmjs.org/sqlite/-/sqlite-5.0.1.tgz"
-  integrity sha512-sRxbVwzNX9rvEPnxz9scNqi60KtfxBXMzzus5BI4+0nPtVkyEXyBwQ7JkM2M1CiVvEFw6s1vn2Z9/1DEdSpiaA==
-
 sqlite3@^5.1.6:
   version "5.1.6"
   resolved "https://registry.npmjs.org/sqlite3/-/sqlite3-5.1.6.tgz"

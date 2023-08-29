@@ -1,5 +1,5 @@
 {
-  "name": "typescript-app",
+  "name": "omni-mix",
   "version": "0.0.1",
   "description": "",
   "main": "app.js",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "type": "module",
-  "bin":{
-    "www":"./bin/www.js"
+  "bin": {
+    "www": "./bin/www.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
@@ -22,7 +22,6 @@
     "express-generator": "^4.16.1",
     "http-errors": "^2.0.0",
     "morgan": "^1.10.0",
-    "sqlite": "^5.0.1",
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {

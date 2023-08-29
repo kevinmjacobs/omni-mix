@@ -15,18 +15,17 @@
     </tr>
     <% data.forEach(element => { %>
     <tr>
-      <td><%= element.todoId %></td>
-      <td><%= element.todoTask %></td>
+      <td><%= element.id %></td>
+      <td><%= element.todo %></td>
       <form action="/delete" method="POST">
-        <input type="hidden" name="todoId" value="<%= element.todoId %>">
-        <input type="hidden" name="todoTask" value="<%= element.todoTask %>">
+        <input type="hidden" name="id" value="<%= element.id %>">
         <button class="delete" type="submit">❌</button>
       </form>
     </tr>
     <% }) %>
   </table>
   <form action="/" method="POST">
-    <input type="text" name="todoTask" placeholder="Enter Task">
+    <input type="text" name="todo" placeholder="Enter Task">
     <button type="submit">Add</button>
   </form>
 </body>

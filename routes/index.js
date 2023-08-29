@@ -1,51 +1,85 @@
 import express from 'express';
+import sqlite3 from 'sqlite3';
+const SQLITE3 = sqlite3.verbose();
+
 const ROUTER = express.Router();
 
-let todos = [
-  {
-    todoId: '1',
-    todoTask: 'Walk the dog',
-  },
-  {
-    todoId: '2',
-    todoTask: 'Take out trash',
-  },
-  {
-    todoId: '3',
-    todoTask: 'Vacuum',
-  }
-];
-
 ROUTER.get('/', (req, res, next) => {
-  res.render('index', {
-    data: todos,
+  let db = new SQLITE3.Database('./db/omni_mix.db', (err) => {
+    if (err) {
+      res.render('error', { error: err });
+    }
+      console.log("Connected to the database.");
+    }
+  );
+
+  db.serialize(async () => {
+    db.all('SELECT * FROM todo WHERE deleted = 0;', (err, rows) => {
+      if (err) {
+        res.render('error', { error: err });
+      }
+
+      db.close((err) => {
+        if (err) {
+          res.render('error', { error: err });
+        }
+        console.log('Close the database connection');
+        res.render('index', { data: rows });
+      });
+    });
   });
 });
 
 ROUTER.post("/", (req, res) => {
-  const inputTodoId = todos.length + 1;
-  const inputTodoTask = req.body.todoTask;
+  let db = new SQLITE3.Database('./db/omni_mix.db', (err) => {
+    if (err) {
+      res.render('error', { error: err });
+    }
+      console.log("Connected to the database.");
+    }
+  );
 
-  todos.push({
-    todoId: inputTodoId,
-    todoTask: inputTodoTask
-  });
+  db.serialize(async () => {
+    db.run(`INSERT INTO todo(todo) VALUES('${req.body.todo}');`, (err) => {
+      if (err) {
+        res.render('error', { error: err });
+      }
 
-  res.render("index", {
-    data: todos,
+      db.close((err) => {
+        if (err) {
+          res.render('error', { error: err });
+        }
+        console.log('Close the database connection');
+        res.redirect('/');
+      });
+    });
   });
 });
 
 ROUTER.post("/delete", (req, res) => {
-  var requestedtodoId = req.body.todoId;
-  var j = 0;
-  todos.forEach((todo) => {
-    j = j + 1;
-    if (todo.todoId === requestedtodoId) {
-      todos.splice(j - 1, 1);
+  let db = new SQLITE3.Database('./db/omni_mix.db', (err) => {
+    if (err) {
+      res.render('error', { error: err });
     }
+      console.log("Connected to the database.");
+    }
+  );
+
+  db.serialize(async () => {
+    db.run(`UPDATE todo SET deleted = 1 WHERE id = ${req.body.id};`, (err) => {
+      if (err) {
+        res.render('error', { error: err });
+      }
+
+      db.close((err) => {
+        if (err) {
+          res.render('error', { error: err });
+        }
+        console.log('Close the database connection');
+        res.redirect('/');
+      });
+    });
   });
-  res.redirect("/");
 });
 
 export default ROUTER;
