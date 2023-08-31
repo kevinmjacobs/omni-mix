@@ -2,6 +2,7 @@
 <html>
 <!-- prevents favicon request -->
 <link rel="icon" href="data:,">
+<link rel="stylesheet" href="/stylesheets/style.css" type="text/css">
 <head>
   <title>Todo List</title>
 </head>
@@ -19,7 +20,7 @@
       <td><%= element.todo %></td>
       <form action="/delete" method="POST">
         <input type="hidden" name="id" value="<%= element.id %>">
-        <button class="delete" type="submit">❌</button>
+        <button class="delete" type="submit">x</button>
       </form>
     </tr>
     <% }) %>
