@@ -4,15 +4,27 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import logger from 'morgan';
-
+import livereload from 'livereload';
+import connectLivereload from 'connect-livereload';
 import ROUTER from './routes/index.js';
 
-const APP = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const liveReloadServer = livereload.createServer({port: 35729});
+liveReloadServer.watch(path.join(__dirname, '/public'));
+
+liveReloadServer.server.once("connection", () => {
+  setTimeout(() => {
+    liveReloadServer.refresh("/");
+  }, 100);
+});
+
+const APP = express();
 APP.set('views', path.join(__dirname, 'views'));
 APP.set('view engine', 'ejs');
+
+APP.use(connectLivereload());
 
 APP.use(logger("dev"));
 APP.use(express.json());
@@ -35,5 +47,7 @@ APP.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.render('error');
 });
+
+console.log("Starting server")
 
 export default APP;
