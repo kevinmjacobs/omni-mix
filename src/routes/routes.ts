@@ -1,19 +1,19 @@
 import express from 'express';
 import sqlite3 from 'sqlite3';
-const SQLITE3 = sqlite3.verbose();
 
-const ROUTER = express.Router();
+const sqlite = sqlite3.verbose();
+const router = express.Router();
 
-ROUTER.get('/', (req, res, next) => {
-  let db = new SQLITE3.Database('./db/omni_mix.db', (err) => {
+router.get('/', (req, res, next) => {
+  let db = new sqlite.Database('./db/omni_mix.db', (err) => {
     if (err) {
       res.render('error', { error: err });
     }
-      console.log("Connected to the database.");
-    }
-  );
 
-  db.serialize(async () => {
+    console.log("Connected to the database.");
+  });
+
+  db.serialize(() => {
     db.all('SELECT * FROM todo WHERE deleted = 0;', (err, rows) => {
       if (err) {
         res.render('error', { error: err });
@@ -23,6 +23,7 @@ ROUTER.get('/', (req, res, next) => {
         if (err) {
           res.render('error', { error: err });
         }
+
         console.log('Close the database connection');
         res.render('index', { data: rows });
       });
@@ -30,14 +31,14 @@ ROUTER.get('/', (req, res, next) => {
   });
 });
 
-ROUTER.post("/", (req, res) => {
-  let db = new SQLITE3.Database('./db/omni_mix.db', (err) => {
+router.post("/", (req, res) => {
+  let db = new sqlite.Database('./db/omni_mix.db', (err) => {
     if (err) {
       res.render('error', { error: err });
     }
-      console.log("Connected to the database.");
-    }
-  );
+
+    console.log("Connected to the database.");
+  });
 
   db.serialize(async () => {
     db.run(`INSERT INTO todo(todo) VALUES('${req.body.todo}');`, (err) => {
@@ -49,6 +50,7 @@ ROUTER.post("/", (req, res) => {
         if (err) {
           res.render('error', { error: err });
         }
+
         console.log('Close the database connection');
         res.redirect('/');
       });
@@ -56,16 +58,16 @@ ROUTER.post("/", (req, res) => {
   });
 });
 
-ROUTER.post("/delete", (req, res) => {
-  let db = new SQLITE3.Database('./db/omni_mix.db', (err) => {
+router.post("/delete", (req, res) => {
+  let db = new sqlite.Database('./db/omni_mix.db', (err) => {
     if (err) {
       res.render('error', { error: err });
     }
-      console.log("Connected to the database.");
-    }
-  );
 
-  db.serialize(async () => {
+    console.log("Connected to the database.");
+  });
+
+  db.serialize(() => {
     db.run(`UPDATE todo SET deleted = 1 WHERE id = ${req.body.id};`, (err) => {
       if (err) {
         res.render('error', { error: err });
@@ -75,6 +77,7 @@ ROUTER.post("/delete", (req, res) => {
         if (err) {
           res.render('error', { error: err });
         }
+
         console.log('Close the database connection');
         res.redirect('/');
       });
@@ -82,4 +85,4 @@ ROUTER.post("/delete", (req, res) => {
   });
 });
 
-export default ROUTER;
+export default router;

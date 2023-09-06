@@ -4,24 +4,24 @@
  * Module dependencies.
  */
 
-import APP from '../app.js';
+import app from '../src/index';
 import http from 'http';
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
-const normalizePort = (val) => {
-  const PORT = parseInt(val, 10);
+const normalizePort = (val: any) => {
+  const port = parseInt(val, 10);
 
-  if (isNaN(PORT)) {
+  if (isNaN(port)) {
     // named pipe
     return val;
   }
 
-  if (PORT >= 0) {
+  if (port >= 0) {
     // port number
-    return PORT;
+    return port;
   }
 
   return false;
@@ -31,23 +31,23 @@ const normalizePort = (val) => {
  * Event listener for HTTP server "error" event.
  */
 
-const onError = (error) => {
+const onError = (error: any) => {
   if (error.syscall !== 'listen') {
     throw error;
   }
 
-  const BIND = typeof PORT === 'string'
-    ? 'Pipe ' + PORT
-    : 'Port ' + PORT;
+  const bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(BIND + ' requires elevated privileges');
+      console.error(bind + ' requires elevated privileges');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(BIND + ' is already in use');
+      console.error(bind + ' is already in use');
       process.exit(1);
       break;
     default:
@@ -60,30 +60,30 @@ const onError = (error) => {
  */
 
 const onListening = () => {
-  const ADDR = SERVER.address();
-  const BIND = typeof ADDR === 'string'
-    ? 'pipe ' + ADDR
-    : 'port ' + ADDR.port;
-  console.log('Listening on ' + BIND);
+  const addr = server.address();
+  const bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr?.port;
+  console.log('Listening on ' + bind);
 }
 
 /**
  * Get port from environment and store in Express.
  */
 
-const PORT = normalizePort(process.env.PORT || '3000');
-APP.set('port', PORT);
+const port = normalizePort(process.env.port || '3000');
+app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-const SERVER = http.createServer(APP);
+const server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-SERVER.listen(PORT);
-SERVER.on('error', onError);
-SERVER.on('listening', onListening);
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
