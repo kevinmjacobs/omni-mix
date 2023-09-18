@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<!-- prevents favicon request -->
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/stylesheets/style.css" type="text/css">
+<head>
+  <title>User</title>
+</head>
+<body>
+  <h2>Create User</h2>
+  <form action="/user/create" method="POST">
+    <input type="text" name="email" placeholder="Email">
+    <input type="text" name="password" placeholder="Password">
+    <button type="submit">Create</button>
+  </form>
+  <a href="/">Home</a>
+</body>
+</html>
