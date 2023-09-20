@@ -1,30 +1,25 @@
-import sqlite3 from 'sqlite3';
-const sqlite = sqlite3.verbose();
+import mongoose from 'mongoose';
 
-const initializeDB = () => {
-  return new sqlite.Database('./db/omni_mix.db');
+const connectDB = async () => {
+  await mongoose.connect('mongodb://127.0.0.1:27017/omniMix');
 };
+connectDB();
 
-const db = initializeDB();
-
-db.serialize(() => {
-  db.run(
-    `CREATE TABLE IF NOT EXISTS user (
-      id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-      email TEXT NOT NULL,
-      hash TEXT NOT NULL,
-      salt TEXT NOT NULL,
-      access_code TEXT,
-      state TEXT,
-      deleted INT2 DEFAULT 0 NOT NULL
-    )`
-  );
-  db.close((err) => {
-    if (err) {
-      console.log(err);
-      throw err;
-    }
-  });
+const usersSchema = new mongoose.Schema({
+  email: String,
+  hash: String,
+  salt: String,
+  access_code: String,
+  state: String,
+  deleted: {
+    type: Boolean,
+    default: false
+  }
 });
 
-export default initializeDB;
+const User = mongoose.model('User', usersSchema);
+
+export {
+  connectDB,
+  User
+};

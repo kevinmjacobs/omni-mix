@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import crypto from 'crypto';
 import { Request, Response } from 'express';
-// import initializeDB from '../../db/database';
 
 const get_auth = (req: Request, res: Response, _next: Function) => {
   res.render('auth');
