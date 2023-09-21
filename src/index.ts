@@ -5,8 +5,20 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import logger from 'morgan';
 import router from './routes/routes';
+import session from 'express-session';
 
-const app = express();
+const app: express.Application = express();
+
+app.use(cookieParser());
+app.use(session({
+  secret: 'mylittlesecret',
+  saveUninitialized: true,
+  resave: true,
+  cookie: {
+    expires: new Date(Date.now() + 3600000),
+    maxAge: 3600000
+  }
+}));
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -14,7 +26,6 @@ app.set("view engine", "ejs");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '/public')));
 
 app.use('/', router);

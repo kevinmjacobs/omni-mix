@@ -6,9 +6,18 @@ const connectDB = async () => {
 connectDB();
 
 const usersSchema = new mongoose.Schema({
-  email: String,
-  hash: String,
-  salt: String,
+  email: {
+    type: String,
+    required: true
+  },
+  hash:  {
+    type: String,
+    required: true
+  },
+  salt: {
+    type: String,
+    required: true
+  },
   access_code: String,
   state: String,
   deleted: {
