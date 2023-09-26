@@ -1,15 +1,13 @@
 import 'dotenv/config';
 import crypto from 'crypto';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { connectDB, User } from '../../db/database';
 
-type User = InstanceType<typeof User>;
-
-const show_user = (req: Request, res: Response, _next: Function) => {
-  res.render('user');
+const show_user = (req: Request, res: Response, _next: NextFunction) => {
+  res.render('user', { session: req.session });
 };
 
-const create_user = async (req: Request, res: Response, _next: Function) => {
+const create_user = async (req: Request, res: Response, _next: NextFunction) => {
   // if no and password in email
   // if email already exists
 
@@ -26,19 +24,19 @@ const create_user = async (req: Request, res: Response, _next: Function) => {
   }
 };
 
-const login_user = async (req: Request, res: Response, _next: Function) => {
-  let email = req.body.email;
-  let password = req.body.password;
+const login_user = async (req: Request, res: Response, _next: NextFunction) => {
+  const email = req.body.email;
+  const password = req.body.password;
 
   if (email && password) {
     connectDB();
-    let user:any = await User.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (user) {
-      var hashedPassword = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512` ).toString('hex');
+      const hashedPassword = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512` ).toString('hex');
       if (hashedPassword === user.hash) {
         console.log('a match!');
-        req.session.user = email;
+        req.session.email = email;
         req.session.loggedIn = true;
         res.redirect('/user');
       } else {

@@ -1,7 +1,6 @@
 import express from 'express';
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import createError from 'http-errors';
-import cookieParser from 'cookie-parser';
 import path from 'path';
 import logger from 'morgan';
 import router from './routes/routes';
@@ -9,7 +8,6 @@ import session from 'express-session';
 
 const app: express.Application = express();
 
-app.use(cookieParser());
 app.use(session({
   secret: 'mylittlesecret',
   saveUninitialized: true,
@@ -34,7 +32,7 @@ app.use((_req: Request, _res: Response, next: NextFunction) => {
   next(createError(404));
 });
 
-app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+const errorHandler: ErrorRequestHandler = (err, req, res) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -42,6 +40,8 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
+}
+
+app.use(errorHandler);
 
 export default app;

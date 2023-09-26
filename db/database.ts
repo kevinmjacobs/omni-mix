@@ -18,8 +18,8 @@ const usersSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  access_code: String,
-  state: String,
+  access_token: String,
+  refresh_token: String,
   deleted: {
     type: Boolean,
     default: false

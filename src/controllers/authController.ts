@@ -1,40 +1,75 @@
 import 'dotenv/config';
 import crypto from 'crypto';
-import { Request, Response } from 'express';
+import axios from 'axios';
+import { Request, Response, NextFunction } from 'express';
 import { connectDB, User } from '../../db/database';
 
-const get_auth = (req: Request, res: Response, _next: Function) => {
-  res.render('auth');
+interface QueryString {
+  code: string;
+  state: string;
+}
+
+const redirectURI = 'http://localhost:3000/auth/spotify_callback';
+const authorizeURL = 'https://accounts.spotify.com/authorize';
+const tokenURL = 'https://accounts.spotify.com/api/token';
+
+const get_auth = (req: Request, res: Response, _next: NextFunction) => {
+  res.render('auth', { session: req.session });
 };
 
-const get_authorize = (req: Request, res: Response, _next: Function) => {
+const get_authorize = (_req: Request, res: Response, _next: NextFunction) => {
   const state = crypto.randomBytes(8).toString('hex');
   const scope = 'user-read-private user-read-email';
 
-  console.log(process.env.SPOTIFY_CLIENT);
-
-  res.redirect(`https://accounts.spotify.com/authorize?` +
+  res.redirect(`${authorizeURL}?` +
     `response_type=code&` +
     `client_id=${process.env.SPOTIFY_CLIENT}&` +
     `scope=${scope}&` +
-    `redirect_uri=http://localhost:3000/auth/spotify_callback&` +
+    `redirect_uri=${redirectURI}&` +
     `state=${state}`
   );
 };
 
-const spotify_callback = async (req: Request, res: Response, _next: Function) => {
-  const accessCode = req.query?.code;
-  const state = req.query?.state;
-  const email = req.session?.user;
-  if (accessCode && state && email) {
-    connectDB();
-    await User.findOneAndUpdate(
-      { email },
-      { access_code: accessCode, state }
-    );
-  }
-  res.redirect('/auth');
+const spotify_callback = async (req: Request, res: Response, _next: NextFunction) => {
+  const query = req.query as unknown as QueryString;
 
+  const accessCode: string | undefined = query.code;
+  const state: string | undefined = query.state;
+  const email: string | undefined = req.session.email;
+
+  if (accessCode && state && email) {
+    const authHeader:string =
+      Buffer.from(process.env.SPOTIFY_CLIENT + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64');
+
+    axios.post(tokenURL, {
+      code: accessCode,
+      redirect_uri: redirectURI,
+      grant_type: 'authorization_code'
+    }, {
+      headers: {
+        'Authorization': `Basic ${authHeader}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then((response) => {
+      saveAccessTokens(email, response.data.access_token, response.data.refresh_token);
+      res.redirect('/auth');
+    }).catch((error) => {
+      res.render('error', { error });
+    });
+  } else {
+    res.render('error', { error: 'Unable to authenticate!' });
+  }
+}
+
+const saveAccessTokens = async (email: string, accessToken: string, refreshToken: string) => {
+  connectDB();
+  await User.findOneAndUpdate(
+    { email },
+    {
+      access_token: accessToken,
+      refresh_token: refreshToken
+    }
+  );
 }
 
 export default {

@@ -7,15 +7,13 @@ const router = express.Router();
 
 declare module 'express-session' {
   export interface SessionData {
-    user: any;
-    loggedIn: any;
+    email: string;
+    loggedIn: boolean;
   }
 }
 
 router.get('/', (req: Request, res: Response) => {
-  res.locals.user = req.session.user;
-  res.locals.loggedIn = req.session.loggedIn;
-  res.render('index');
+  res.render('index', { session: req.session });
 });
 
 router.get('/user', userController.show_user);
