@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import axios from 'axios';
 import { Request, Response, NextFunction } from 'express';
 import { connectDB, User } from '../../db/database';
+import { generateBearerToken }  from './helpers';
 
 interface QueryString {
   code: string;
@@ -19,7 +20,7 @@ const get_auth = (req: Request, res: Response, _next: NextFunction) => {
 
 const get_authorize = (_req: Request, res: Response, _next: NextFunction) => {
   const state = crypto.randomBytes(8).toString('hex');
-  const scope = 'user-read-private user-read-email';
+  const scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative';
 
   res.redirect(`${authorizeURL}?` +
     `response_type=code&` +
@@ -38,8 +39,7 @@ const spotify_callback = async (req: Request, res: Response, _next: NextFunction
   const email: string | undefined = req.session.email;
 
   if (accessCode && state && email) {
-    const authHeader:string =
-      Buffer.from(process.env.SPOTIFY_CLIENT + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64');
+    const authHeader:string = generateBearerToken();
 
     axios.post(tokenURL, {
       code: accessCode,
@@ -52,7 +52,16 @@ const spotify_callback = async (req: Request, res: Response, _next: NextFunction
       }
     }).then((response) => {
       saveAccessTokens(email, response.data.access_token, response.data.refresh_token);
-      res.redirect('/auth');
+      axios.get('https://api.spotify.com/v1/me',{
+        headers: {
+          'Authorization': `Bearer ${response.data.access_token}`
+        }
+      }).then((response) => {
+        saveSpotifyID(email, response.data.id);
+        res.redirect('/auth');
+      }).catch((error) => {
+        res.render('error', { error });
+      });
     }).catch((error) => {
       res.render('error', { error });
     });
@@ -61,14 +70,19 @@ const spotify_callback = async (req: Request, res: Response, _next: NextFunction
   }
 }
 
-const saveAccessTokens = async (email: string, accessToken: string, refreshToken: string) => {
+const saveAccessTokens = async (email: string, access_token: string, refresh_token: string) => {
   connectDB();
   await User.findOneAndUpdate(
     { email },
-    {
-      access_token: accessToken,
-      refresh_token: refreshToken
-    }
+    { access_token, refresh_token }
+  );
+}
+
+const saveSpotifyID = async (email: string, spotify_id: string) => {
+  connectDB();
+  await User.findOneAndUpdate(
+    { email },
+    { spotify_id }
   );
 }
 

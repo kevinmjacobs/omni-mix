@@ -5,7 +5,19 @@ const connectDB = async () => {
 };
 connectDB();
 
-const usersSchema = new mongoose.Schema({
+interface IUser {
+  email: string;
+  hash: string;
+  salt: string;
+  access_token: string;
+  refresh_token: string;
+  spotify_id: string;
+  deleted: boolean;
+}
+
+type UserModel = mongoose.Model<IUser, object>;
+
+const usersSchema = new mongoose.Schema<IUser, UserModel>({
   email: {
     type: String,
     required: true
@@ -20,6 +32,7 @@ const usersSchema = new mongoose.Schema({
   },
   access_token: String,
   refresh_token: String,
+  spotify_id: String,
   deleted: {
     type: Boolean,
     default: false

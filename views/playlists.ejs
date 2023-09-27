@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<!-- prevents favicon request -->
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/stylesheets/style.css" type="text/css">
+<head>
+  <title>User</title>
+</head>
+<body>
+  <div>Playlists</div>
+  <% if (playlists) { %>
+    <% playlists.forEach((playlist) => { %>
+      <div><%= playlist.name %></div>
+    <% }); %>
+  <% } %>
+</body>
+</html>
