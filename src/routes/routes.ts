@@ -17,16 +17,16 @@ router.get('/', (req: Request, res: Response) => {
   if (req.session.loggedIn) {
     res.render('index', { session: req.session });
   } else {
-    res.render('login');
+    res.redirect('/login');
   }
 });
 
-router.get('/login', userController.show_login);
-router.post('/user/create', userController.create_user);
-router.post('/login', userController.login_user);
+router.get('/login', userController.showLogin);
+router.post('/user/create', userController.createUser);
+router.post('/login', userController.loginUser);
 
-router.get('/auth/spotify_callback', authController.spotify_callback)
+router.get('/auth/spotify_callback', authController.spotifyCallback)
 
-router.get('/playlists', playlistController.show_playlists);
+router.get('/playlists', playlistController.showPlaylists);
 
 export default router;

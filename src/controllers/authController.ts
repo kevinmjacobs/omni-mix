@@ -2,7 +2,7 @@ import 'dotenv/config';
 import axios from 'axios';
 import { HydratedDocument } from 'mongoose';
 import { Request, Response, NextFunction } from 'express';
-import { connectDB, User, IUser } from '../../db/database';
+import { User, IUser } from '../../db/database';
 import { generateBearerToken }  from './helpers';
 
 interface QueryString {
@@ -13,7 +13,7 @@ interface QueryString {
 const redirectURI = 'http://localhost:3000/auth/spotify_callback';
 const tokenURL = 'https://accounts.spotify.com/api/token';
 
-const spotify_callback = async (req: Request, res: Response, _next: NextFunction) => {
+const spotifyCallback = async (req: Request, res: Response, _next: NextFunction) => {
   const query = req.query as unknown as QueryString;
 
   const accessCode: string | undefined = query.code;
@@ -65,17 +65,15 @@ const spotify_callback = async (req: Request, res: Response, _next: NextFunction
 }
 
 const findUser = async (email: string) => {
-  connectDB();
   const user: HydratedDocument<IUser> | null = await User.findOne({ email: email });
   return user;
 }
 
 const saveUser = async (user: HydratedDocument<IUser> ) => {
-  connectDB();
   await user.save();
   return user;
 }
 
 export default {
-  spotify_callback
+  spotifyCallback
 };

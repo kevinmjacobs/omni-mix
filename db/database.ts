@@ -42,7 +42,6 @@ const usersSchema = new mongoose.Schema<IUser, UserModel>({
 const User = mongoose.model('User', usersSchema);
 
 export {
-  connectDB,
   User,
   IUser
 };
