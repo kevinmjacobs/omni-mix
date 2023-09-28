@@ -14,15 +14,17 @@ declare module 'express-session' {
 }
 
 router.get('/', (req: Request, res: Response) => {
-  res.render('index', { session: req.session });
+  if (req.session.loggedIn) {
+    res.render('index', { session: req.session });
+  } else {
+    res.render('login');
+  }
 });
 
-router.get('/user', userController.show_user);
+router.get('/login', userController.show_login);
 router.post('/user/create', userController.create_user);
-router.post('/user/login', userController.login_user);
+router.post('/login', userController.login_user);
 
-router.get('/auth', authController.get_auth);
-router.get('/auth/authorize', authController.get_authorize);
 router.get('/auth/spotify_callback', authController.spotify_callback)
 
 router.get('/playlists', playlistController.show_playlists);

@@ -43,5 +43,6 @@ const User = mongoose.model('User', usersSchema);
 
 export {
   connectDB,
-  User
+  User,
+  IUser
 };

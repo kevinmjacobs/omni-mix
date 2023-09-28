@@ -1,8 +1,8 @@
 import 'dotenv/config';
-import crypto from 'crypto';
 import axios from 'axios';
+import { HydratedDocument } from 'mongoose';
 import { Request, Response, NextFunction } from 'express';
-import { connectDB, User } from '../../db/database';
+import { connectDB, User, IUser } from '../../db/database';
 import { generateBearerToken }  from './helpers';
 
 interface QueryString {
@@ -11,25 +11,7 @@ interface QueryString {
 }
 
 const redirectURI = 'http://localhost:3000/auth/spotify_callback';
-const authorizeURL = 'https://accounts.spotify.com/authorize';
 const tokenURL = 'https://accounts.spotify.com/api/token';
-
-const get_auth = (req: Request, res: Response, _next: NextFunction) => {
-  res.render('auth', { session: req.session });
-};
-
-const get_authorize = (_req: Request, res: Response, _next: NextFunction) => {
-  const state = crypto.randomBytes(8).toString('hex');
-  const scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative';
-
-  res.redirect(`${authorizeURL}?` +
-    `response_type=code&` +
-    `client_id=${process.env.SPOTIFY_CLIENT}&` +
-    `scope=${scope}&` +
-    `redirect_uri=${redirectURI}&` +
-    `state=${state}`
-  );
-};
 
 const spotify_callback = async (req: Request, res: Response, _next: NextFunction) => {
   const query = req.query as unknown as QueryString;
@@ -39,6 +21,7 @@ const spotify_callback = async (req: Request, res: Response, _next: NextFunction
   const email: string | undefined = req.session.email;
 
   if (accessCode && state && email) {
+    const user = await findUser(email);
     const authHeader:string = generateBearerToken();
 
     axios.post(tokenURL, {
@@ -51,17 +34,28 @@ const spotify_callback = async (req: Request, res: Response, _next: NextFunction
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }).then((response) => {
-      saveAccessTokens(email, response.data.access_token, response.data.refresh_token);
-      axios.get('https://api.spotify.com/v1/me',{
-        headers: {
-          'Authorization': `Bearer ${response.data.access_token}`
+      if (user) {
+        user.access_token = response.data.access_token;
+        user.refresh_token = response.data.refresh_token;
+        saveUser(user);
+        if (!user.spotify_id) {
+          axios.get('https://api.spotify.com/v1/me',{
+            headers: {
+              'Authorization': `Bearer ${response.data.access_token}`
+            }
+          }).then((response) => {
+            user.spotify_id = response.data.id;
+            saveUser(user);
+            res.redirect('/');
+          }).catch((error) => {
+            res.render('error', { error });
+          });
+        } else {
+          res.redirect('/');
         }
-      }).then((response) => {
-        saveSpotifyID(email, response.data.id);
-        res.redirect('/auth');
-      }).catch((error) => {
-        res.render('error', { error });
-      });
+      } else {
+        res.render('error', { error: 'User not found!' });
+      }
     }).catch((error) => {
       res.render('error', { error });
     });
@@ -70,24 +64,18 @@ const spotify_callback = async (req: Request, res: Response, _next: NextFunction
   }
 }
 
-const saveAccessTokens = async (email: string, access_token: string, refresh_token: string) => {
+const findUser = async (email: string) => {
   connectDB();
-  await User.findOneAndUpdate(
-    { email },
-    { access_token, refresh_token }
-  );
+  const user: HydratedDocument<IUser> | null = await User.findOne({ email: email });
+  return user;
 }
 
-const saveSpotifyID = async (email: string, spotify_id: string) => {
+const saveUser = async (user: HydratedDocument<IUser> ) => {
   connectDB();
-  await User.findOneAndUpdate(
-    { email },
-    { spotify_id }
-  );
+  await user.save();
+  return user;
 }
 
 export default {
-  get_auth,
-  get_authorize,
   spotify_callback
 };
