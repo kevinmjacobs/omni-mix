@@ -28,5 +28,6 @@ router.post('/login', userController.loginUser);
 router.get('/auth/spotify_callback', authController.spotifyCallback)
 
 router.get('/playlists', playlistController.showPlaylists);
+router.get('/playlists/:playlist_id', playlistController.getPlaylist);
 
 export default router;

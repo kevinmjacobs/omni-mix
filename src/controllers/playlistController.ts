@@ -35,6 +35,35 @@ const showPlaylists = async (req: Request, res: Response, _next: NextFunction) =
   }
 }
 
+const getPlaylist = async (req: Request, res: Response, _next: NextFunction) => {
+  if (req.session.email && req.params.playlist_id) {
+    const user = await User.findOne({email: req.session.email});
+    if (user && user.access_token) {
+      axios.get(`https://api.spotify.com/v1/playlists/${encodeURIComponent(req.params.playlist_id)}`, {
+          headers: {
+            'Authorization': `Bearer ${user.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        }).then((response) => {
+          res.render('playlist', {
+            session: req.session,
+            playlist: response.data
+          });
+        }).catch((error) => {
+          console.log(error);
+          res.render('error', {
+            error,
+          });
+        });
+    } else {
+      res.redirect('/playlists');
+    }
+  } else {
+    res.redirect('/playlists');
+  }
+};
+
 export default {
-  showPlaylists
+  showPlaylists,
+  getPlaylist
 }

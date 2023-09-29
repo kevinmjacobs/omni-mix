@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<!-- prevents favicon request -->
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/stylesheets/style.css" type="text/css">
+<head>
+  <title>User</title>
+</head>
+<body>
+  <div><%= playlist.name %></div>
+  <% if (playlist) { %>
+    <% playlist.tracks.items.forEach((item) => { %>
+      <div class="track-container">
+        <div><%= item.track.name %></div>
+        <div><%= item.track.id %></div>
+      </div>
+    <% }); %>
+  <% } %>
+</body>
+<style>
+  .track-container {
+    margin: 10px auto;
+  }
+</style>
+</html>
