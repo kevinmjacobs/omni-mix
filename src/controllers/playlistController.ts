@@ -18,7 +18,6 @@ const showPlaylists = async (req: Request, res: Response, _next: NextFunction) =
           playlists: response.data.items
         });
       }).catch((error) => {
-        console.log(error);
         res.render('error', {
           error,
           playlists: []
@@ -39,28 +38,43 @@ const getPlaylist = async (req: Request, res: Response, _next: NextFunction) => 
   if (req.session.email && req.params.playlist_id) {
     const user = await User.findOne({email: req.session.email});
     if (user && user.access_token) {
-      axios.get(`https://api.spotify.com/v1/playlists/${encodeURIComponent(req.params.playlist_id)}`, {
-          headers: {
-            'Authorization': `Bearer ${user.access_token}`,
-            'Content-Type': 'application/json'
-          }
-        }).then((response) => {
-          res.render('playlist', {
-            session: req.session,
-            playlist: response.data
-          });
-        }).catch((error) => {
-          console.log(error);
-          res.render('error', {
-            error,
-          });
+      try {
+        const items = await getAllItems(req.params.playlist_id, user.access_token);      
+        res.render('playlist', {
+          session: req.session,
+          items: items
         });
+      } catch (error) {
+        res.render('error', {
+          error,
+        });
+      }
     } else {
       res.redirect('/playlists');
     }
   } else {
     res.redirect('/playlists');
   }
+};
+
+const getAllItems = async (playlistId: string, accessToken: string) => {
+  let items: Array<object> = [];
+  let url: string | boolean = `https://api.spotify.com/v1/playlists/${encodeURIComponent(playlistId)}/tracks?limit=100`;
+  while (url) {
+    await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    }).then((response) => {
+      items = items.concat(response.data.items);
+      url = response.data.next;
+    }).catch ((error) => {
+      console.log(error);
+      url = false;
+    });
+  }
+  return items;
 };
 
 export default {
