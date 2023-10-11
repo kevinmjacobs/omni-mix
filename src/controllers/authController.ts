@@ -4,11 +4,7 @@ import { HydratedDocument } from 'mongoose';
 import { Request, Response, NextFunction } from 'express';
 import { User, IUser } from '../../db/database';
 import { generateBearerToken }  from './helpers';
-
-interface QueryString {
-  code: string;
-  state: string;
-}
+import { QueryString } from './interfaces'
 
 const redirectURI = 'http://localhost:3000/auth/spotify_callback';
 const tokenURL = 'https://accounts.spotify.com/api/token';

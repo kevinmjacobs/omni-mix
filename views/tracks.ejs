@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<!-- prevents favicon request -->
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/stylesheets/style.css" type="text/css">
+<head>
+  <title>Tracks</title>
+</head>
+<body>
+  <div style="display: inline;">
+    <table style="width: 75%; border-right: 1px solid black; display:inline-block">
+      <tr class="track-container">
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Album</th>
+        <th>Duration</th>
+      </tr>
+      <% items.forEach((item) => { %>
+        <tr class="track-container item" onclick="searchDiscogs('<%= item.track.name %>','<%= item.track.artistNames %>','<%= item.track.album.name %>')">
+          <td><%= item.track.name %></td>
+          <td><%= item.track.artistNames %></td>
+          <td><%= item.track.album.name %></td>
+          <td><%= item.track.duration_ms %></td>
+          <td></td>
+        </tr>
+      <% }); %>
+    </table>
+    <div style="vertical-align: top;width: 25%; display: inline-block;position:fixed;">
+      <div>details<div>
+      <div id="search-container">
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    const searchContainer = document.getElementById('search-container');
+
+    function searchDiscogs(title, artistNames, album) {
+      searchContainer.replaceChildren();
+
+      const xmlGetRequest = new XMLHttpRequest();
+      const url = `${window.location.origin}/search?artist=${artistNames}&title=${title}&album=${album}`;
+      const params = {
+        title: encodeURIComponent(title),
+        artist: encodeURIComponent(artistNames),
+        album: encodeURIComponent(album)
+      };
+      xmlGetRequest.open("GET", url, true);
+
+      xmlGetRequest.onreadystatechange = function () {
+        if (xmlGetRequest.readyState === 4 && xmlGetRequest.status === 200) {
+          renderReleases(JSON.parse(xmlGetRequest.response));
+        }
+      };
+
+      xmlGetRequest.send(params);
+    };
+
+    function renderReleases(releases) {
+      releases.forEach((release) => {
+        let releaseItem = document.createElement('div');
+        releaseItem.classList.add('release-item');
+        releaseItem.textContent = release.title;
+        searchContainer.appendChild(releaseItem);
+      });
+    };
+  </script>
+</body>
+<style>
+  .track-container {
+    margin: 10px auto;
+  }
+</style>
+</html>

@@ -1,7 +1,10 @@
 import 'dotenv/config';
 import axios from 'axios';
+import memoize from 'memoizee';
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../../db/database';
+import { formatDuration, formatReleases } from './helpers';
+import { QueryString, PlaylistItem } from './interfaces';
 
 const showPlaylists = async (req: Request, res: Response, _next: NextFunction) => {
   if (req.session.email) {
@@ -39,10 +42,10 @@ const getPlaylist = async (req: Request, res: Response, _next: NextFunction) => 
     const user = await User.findOne({email: req.session.email});
     if (user && user.access_token) {
       try {
-        const items = await getAllItems(req.params.playlist_id, user.access_token);      
-        res.render('playlist', {
+        const items = await getAllItems(req.params.playlist_id, user.access_token);
+        res.render('tracks', {
           session: req.session,
-          items: items
+          items
         });
       } catch (error) {
         res.render('error', {
@@ -57,8 +60,8 @@ const getPlaylist = async (req: Request, res: Response, _next: NextFunction) => 
   }
 };
 
-const getAllItems = async (playlistId: string, accessToken: string) => {
-  let items: Array<object> = [];
+const getAllItems = memoize(async (playlistId: string, accessToken: string) => {
+  let items: PlaylistItem[] = [];
   let url: string | boolean = `https://api.spotify.com/v1/playlists/${encodeURIComponent(playlistId)}/tracks?limit=100`;
   while (url) {
     await axios.get(url, {
@@ -74,10 +77,51 @@ const getAllItems = async (playlistId: string, accessToken: string) => {
       url = false;
     });
   }
+  return formatItems(items);
+});
+
+const formatItems = memoize((items: PlaylistItem[]) => {
+  items.forEach((item: PlaylistItem) => {
+    item.track.artistNames = item.track.artists.map((artist) => { return artist.name } ).join(", ");
+    item.track.duration_ms = formatDuration(parseInt(item.track.duration_ms,10));
+    return item;
+  });
   return items;
+});
+
+const searchDiscogsDatabase = async (req: Request, res: Response, _next: NextFunction) => {
+  const query = req.query as unknown as QueryString;
+
+  const track: string | undefined = query.title;
+  const artist: string | undefined = query.artist;
+  const album: string | undefined = query.album;
+  const email: string | undefined = req.session.email;
+
+  if (email && (track || artist || album)) {
+    const params = {
+      type: "release",
+    };
+    track && Object.assign(params, { track });
+    artist && Object.assign(params, { artist });
+    album && Object.assign(params, { query: album });
+    await axios.get('https://api.discogs.com/database/search', {
+      params,
+      headers: {
+        'Authorization': `Discogs key=${process.env.DISCOGS_CONSUMER_KEY}, secret=${process.env.DISCOGS_CONSUMER_SECRET}`,
+        'Content-Type': 'application/json'
+      }
+    }).then((response) => {
+      const formatedData: object[] = formatReleases(response.data.results);
+      res.json(formatedData);
+    }).catch((error) => {
+      console.log(error);
+      res.send('error');
+    })
+  }
 };
 
 export default {
   showPlaylists,
-  getPlaylist
+  getPlaylist,
+  searchDiscogsDatabase
 }
