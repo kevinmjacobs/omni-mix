@@ -27,7 +27,8 @@ interface Release {
   style: string[],
   id: number,
   master_id: number,
-  title: string
+  title: string,
+  thumb: string
 }
 
 export {

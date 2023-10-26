@@ -8,33 +8,41 @@
 </head>
 <body>
   <div style="display: inline;">
-    <table style="width: 75%; border-right: 1px solid black; display:inline-block">
-      <tr class="track-container">
+    <table style="width: 75%; border-right: 1px solid black; display:inline-block; height: 100vh; overflow: auto; margin-right: 15px;">
+      <tr class="track-container" style="height:30px">
         <th>Title</th>
         <th>Artist</th>
         <th>Album</th>
         <th>Duration</th>
       </tr>
       <% items.forEach((item) => { %>
-        <tr class="track-container item" onclick="searchDiscogs('<%= item.track.name %>','<%= item.track.artistNames %>','<%= item.track.album.name %>')">
+        <tr
+          class="track-container item"
+          data-track-title="<%= item.track.name %>"
+          data-track-artists="<%= item.track.artistNames %>"
+          data-track-album="<%= item.track.album.name %>"
+          onclick="searchDiscogs(this)"
+        >
           <td><%= item.track.name %></td>
           <td><%= item.track.artistNames %></td>
           <td><%= item.track.album.name %></td>
           <td><%= item.track.duration_ms %></td>
-          <td></td>
         </tr>
       <% }); %>
     </table>
     <div style="vertical-align: top;width: 25%; display: inline-block;position:fixed;">
-      <div>details<div>
-      <div id="search-container">
+      <div id="search-container" style="height:calc(100vh - 20px);position:sticky;overflow:auto;">
       </div>
     </div>
   </div>
   <script type="text/javascript">
     const searchContainer = document.getElementById('search-container');
 
-    function searchDiscogs(title, artistNames, album) {
+    function searchDiscogs(trackElement) {
+      const title = trackElement.dataset.trackTitle
+      const artistNames = trackElement.dataset.trackArtists
+      const album = trackElement.dataset.trackAlbum
+
       searchContainer.replaceChildren();
 
       const xmlGetRequest = new XMLHttpRequest();
@@ -56,13 +64,35 @@
     };
 
     function renderReleases(releases) {
-      releases.forEach((release) => {
-        let releaseItem = document.createElement('div');
-        releaseItem.classList.add('release-item');
-        releaseItem.textContent = release.title;
-        searchContainer.appendChild(releaseItem);
-      });
+      if (releases.length === 0) {
+        searchContainer.appendChild(noSearchResults);
+      } else {
+        releases.forEach((release) => {
+          searchContainer.appendChild(releaseItem(release));
+        });
+      }
     };
+
+    function releaseItem(release) {
+      let releaseContainer = document.createElement('div');
+      releaseContainer.classList.add('release-item');
+
+      let releaseThumb = document.createElement('img');
+      releaseThumb.src = release.thumb;
+
+      releaseContainer.appendChild(releaseThumb);
+
+      let releaseDetail = document.createElement('div');
+      releaseDetail.textContent = release.title;
+      releaseContainer.appendChild(releaseDetail);
+
+      return releaseContainer;
+    };
+
+    const noSearchResults = Object.assign(
+      document.createElement('div'),
+      { innerHTML: "No results from search" }
+    );
   </script>
 </body>
 <style>

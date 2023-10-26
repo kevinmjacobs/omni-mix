@@ -22,6 +22,7 @@ const formatReleases = (releases: Release[]) => {
       year: release.year,
       masterId:  release.master_id,
       releaseId:  release.id,
+      thumb: release.thumb,
       label: release.label[0],
       format: release.format.join(','),
       genre: release.genre.join(','),

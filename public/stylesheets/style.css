@@ -1,8 +1,15 @@
 body {
-  padding: 50px;
+  padding: 10px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: rgb(9, 126, 9);
+}
+
+th {
+  position: sticky;
+  top: 0px;
+  background: white;
+  margin: 5px auto;
 }

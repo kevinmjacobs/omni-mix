@@ -98,12 +98,15 @@ const searchDiscogsDatabase = async (req: Request, res: Response, _next: NextFun
   const email: string | undefined = req.session.email;
 
   if (email && (track || artist || album)) {
-    const params = {
+    let params = {
       type: "release",
+      track,
+      artist,
+      release_title: album
     };
-    track && Object.assign(params, { track });
-    artist && Object.assign(params, { artist });
-    album && Object.assign(params, { query: album });
+
+    let results: [] = [];
+
     await axios.get('https://api.discogs.com/database/search', {
       params,
       headers: {
@@ -111,12 +114,37 @@ const searchDiscogsDatabase = async (req: Request, res: Response, _next: NextFun
         'Content-Type': 'application/json'
       }
     }).then((response) => {
-      const formatedData: object[] = formatReleases(response.data.results);
-      res.json(formatedData);
+      results = response.data.results;
     }).catch((error) => {
       console.log(error);
       res.send('error');
-    })
+    });
+
+    if (results.length > 0) {
+      const formatedData: object[] = formatReleases(results);
+      res.json(formatedData);
+    } else {
+      delete params.track; // widen search for just album release and artist
+
+      await axios.get('https://api.discogs.com/database/search', {
+        params,
+        headers: {
+          'Authorization': `Discogs key=${process.env.DISCOGS_CONSUMER_KEY}, secret=${process.env.DISCOGS_CONSUMER_SECRET}`,
+          'Content-Type': 'application/json'
+        }
+      }).then((response) => {
+        results = response.data.results;
+      }).catch((error) => {
+        console.log(error);
+        res.send('error');
+      });
+
+      const formatedData: object[] = formatReleases(results);
+      res.json(formatedData);
+    }
+  } else {
+    console.log('no user or no search params');
+    res.send('error');
   }
 };
 
