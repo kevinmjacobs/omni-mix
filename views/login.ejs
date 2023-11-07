@@ -3,47 +3,19 @@
 <!-- prevents favicon request -->
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="/stylesheets/style.css" type="text/css">
+<link rel="stylesheet" href="/stylesheets/login.css" type="text/css">
 <head>
   <title>OmniMix - Login</title>
 </head>
 <body>
   <div id="login-container">
-    <h2>Login</h2>
+    <h2>OmniMix</h2>
     <form action="/login" method="POST">
-      <input type="text" name="email" placeholder="Email">
-      <input type="text" name="password" placeholder="Password">
-      <button type="submit">Log In</button>
+      <input id="email" type="text" name="email" placeholder="Email">
+      <input id="password" type="text" name="password" placeholder="Password">
+      <button id="login" type="submit">Log In</button>
     </form>
-    <div id="link-to-create" style="margin: 10px auto;cursor: pointer;">
-      Create Account
-    </div>
+    <a id="create-link" href="/create">New User? Create an account</a>
   </div>
-  <div id="create-container" style="display:none;">
-    <h2>Create Account</h2>
-    <form action="/user/create" method="POST">
-      <input type="text" name="email" placeholder="Email">
-      <input type="text" name="password" placeholder="Password">
-      <button type="submit">Create</button>
-    </form>
-    <div id="link-to-login" style="margin: 10px auto;cursor: pointer;">
-      Login
-    </div>
-  </div>
-  <script type="text/javascript">
-    let linkToCreate = document.getElementById("link-to-create");
-    let linkToLogin = document.getElementById("link-to-login");
-    let loginContainer = document.getElementById("login-container");
-    let createContainer = document.getElementById("create-container");
-
-    linkToCreate.addEventListener("click", function() {
-      loginContainer.style.setProperty('display','none');
-      createContainer.style.setProperty('display','block');
-    });
-
-    linkToLogin.addEventListener("click", function() {
-      createContainer.style.setProperty('display','none');
-      loginContainer.style.setProperty('display','block');
-    });
-  </script>
 </body>
 </html>

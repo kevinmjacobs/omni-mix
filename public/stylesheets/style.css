@@ -1,15 +1,29 @@
-body {
-  padding: 10px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+:root {
+  --black: #101419;
+  --gray: #9097C0;
+  --green: #4B6858;
+  --green-border: 1px solid #4B6858;
+  --white: #F8F2DC;
 }
 
-a {
-  color: rgb(9, 126, 9);
+html {
+  background-color: var(--white);
+  color: var(--green);
+  height: 100%;
+  margin: 0;
+  width: 100%;
+}
+
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  height: calc(100% - 40px);
+  margin: 10px;
+  padding: 10px;
 }
 
 th {
-  position: sticky;
-  top: 0px;
   background: white;
   margin: 5px auto;
+  position: sticky;
+  top: 0px;
 }

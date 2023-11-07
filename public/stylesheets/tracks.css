@@ -1,0 +1,30 @@
+#track-table {
+  border-right: 1px solid var(--black);
+  display: inline-block;
+  height: 100vh;
+  margin-right: 15px;
+  overflow: auto;
+  width: 75%;
+}
+
+.track-container {
+  height: 30px;
+  margin: 10px auto;
+}
+
+.track-item {
+  margin: 10px auto;
+}
+
+#search-column {
+  display: inline-block;
+  position: fixed;
+  vertical-align: top;
+  width: 25%;
+}
+
+#search-container {
+  height: calc(100vh - 20px);
+  overflow: auto;
+  position: sticky;
+}

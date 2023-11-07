@@ -7,6 +7,10 @@ const showLogin = (req: Request, res: Response, _next: NextFunction) => {
   res.render('login', { session: req.session });
 };
 
+const showCreateUser = (req: Request, res: Response, _next: NextFunction) => {
+  res.render('create', { session: req.session });
+};
+
 const createUser = async (req: Request, res: Response, _next: NextFunction) => {
   // if no and password in email
   // if email already exists
@@ -69,6 +73,7 @@ const authorizeUser = async (res: Response) => {
 
 export default {
   showLogin,
+  showCreateUser,
   createUser,
   loginUser
 }

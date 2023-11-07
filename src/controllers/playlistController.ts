@@ -98,7 +98,7 @@ const searchDiscogsDatabase = async (req: Request, res: Response, _next: NextFun
   const email: string | undefined = req.session.email;
 
   if (email && (track || artist || album)) {
-    let params = {
+    const params = {
       type: "release",
       track,
       artist,

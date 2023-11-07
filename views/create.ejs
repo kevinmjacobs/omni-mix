@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<!-- prevents favicon request -->
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/stylesheets/style.css" type="text/css">
+<link rel="stylesheet" href="/stylesheets/login.css" type="text/css">
+<head>
+  <title>OmniMix - Login</title>
+</head>
+<body>
+  <div id="create-container">
+    <h2>OmniMix</h2>
+    <form id="create-form" action="/create" method="POST">
+      <input id="email" type="text" name="email" placeholder="Email">
+      <input id="password" name="password" placeholder="Password">
+      <input id="confirm-password" type="text" name="confirm_password" placeholder="Confirm Password">
+      <button id="create" class="disabled-button" type="submit" disabled>Create</button>
+    </form>
+    <a id="login-link" href="/login">Have an account? Login</a>
+  </div>
+</body>
+<script src="/javascripts/create.js" type="application/javascript"></script>
+</html>

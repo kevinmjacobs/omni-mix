@@ -3,13 +3,14 @@
 <!-- prevents favicon request -->
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="/stylesheets/style.css" type="text/css">
+<link rel="stylesheet" href="/stylesheets/tracks.css" type="text/css">
 <head>
   <title>Tracks</title>
 </head>
 <body>
   <div style="display: inline;">
-    <table style="width: 75%; border-right: 1px solid black; display:inline-block; height: 100vh; overflow: auto; margin-right: 15px;">
-      <tr class="track-container" style="height:30px">
+    <table id="track-table">
+      <tr class="track-container">
         <th>Title</th>
         <th>Artist</th>
         <th>Album</th>
@@ -17,22 +18,21 @@
       </tr>
       <% items.forEach((item) => { %>
         <tr
-          class="track-container item"
+          class="track-item"
           data-track-title="<%= item.track.name %>"
           data-track-artists="<%= item.track.artistNames %>"
           data-track-album="<%= item.track.album.name %>"
           onclick="searchDiscogs(this)"
         >
-          <td><%= item.track.name %></td>
-          <td><%= item.track.artistNames %></td>
-          <td><%= item.track.album.name %></td>
-          <td><%= item.track.duration_ms %></td>
+          <td class="track-name"><%= item.track.name %></td>
+          <td class="track-artist"><%= item.track.artistNames %></td>
+          <td class="track-album"><%= item.track.album.name %></td>
+          <td class="track-duration"><%= item.track.duration_ms %></td>
         </tr>
       <% }); %>
     </table>
-    <div style="vertical-align: top;width: 25%; display: inline-block;position:fixed;">
-      <div id="search-container" style="height:calc(100vh - 20px);position:sticky;overflow:auto;">
-      </div>
+    <div id="search-column">
+      <div id="search-container"></div>
     </div>
   </div>
   <script type="text/javascript">
@@ -95,9 +95,4 @@
     );
   </script>
 </body>
-<style>
-  .track-container {
-    margin: 10px auto;
-  }
-</style>
 </html>

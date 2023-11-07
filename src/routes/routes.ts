@@ -22,8 +22,9 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 router.get('/login', userController.showLogin);
-router.post('/user/create', userController.createUser);
+router.get('/create', userController.showCreateUser);
 router.post('/login', userController.loginUser);
+router.post('/create', userController.createUser);
 
 router.get('/auth/spotify_callback', authController.spotifyCallback)
 
