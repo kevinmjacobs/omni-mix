@@ -47,7 +47,7 @@ const spotifyCallback = async (req: Request, res: Response, _next: NextFunction)
             res.render('error', { error });
           });
         } else {
-          res.redirect('/');
+          res.redirect('index');
         }
       } else {
         res.render('error', { error: 'User not found!' });
