@@ -6,7 +6,7 @@ import { User } from '../../db/database';
 import { formatDuration, formatReleases } from './helpers';
 import { QueryString, PlaylistItem } from './interfaces';
 
-const showPlaylists = async (req: Request, res: Response, _next: NextFunction) => {
+const showPlaylists = memoize(async (req: Request, res: Response, _next: NextFunction) => {
   if (req.session.email) {
     const user = await User.findOne({email: req.session.email});
     if (user && user.spotify_id) {
@@ -16,7 +16,7 @@ const showPlaylists = async (req: Request, res: Response, _next: NextFunction) =
           'Content-Type': 'application/json'
         }
       }).then((response) => {
-        res.render('playlists', {
+        res.render('index', {
           session: req.session,
           playlists: response.data.items
         });
@@ -27,7 +27,7 @@ const showPlaylists = async (req: Request, res: Response, _next: NextFunction) =
         });
       });
     } else {
-      res.render('playlists', {
+      res.render('index', {
         session: req.session,
         playlists: []
       });
@@ -35,9 +35,9 @@ const showPlaylists = async (req: Request, res: Response, _next: NextFunction) =
   } else {
     res.redirect('login');
   }
-}
+});
 
-const getPlaylist = async (req: Request, res: Response, _next: NextFunction) => {
+const getPlaylist = memoize(async (req: Request, res: Response, _next: NextFunction) => {
   if (req.session.email && req.params.playlist_id) {
     const user = await User.findOne({email: req.session.email});
     if (user && user.access_token) {
@@ -58,7 +58,7 @@ const getPlaylist = async (req: Request, res: Response, _next: NextFunction) => 
   } else {
     res.redirect('/playlists');
   }
-};
+});
 
 const getAllItems = memoize(async (playlistId: string, accessToken: string) => {
   let items: PlaylistItem[] = [];
@@ -89,7 +89,7 @@ const formatItems = memoize((items: PlaylistItem[]) => {
   return items;
 });
 
-const searchDiscogsDatabase = async (req: Request, res: Response, _next: NextFunction) => {
+const searchDiscogsDatabase = memoize(async (req: Request, res: Response, _next: NextFunction) => {
   const query = req.query as unknown as QueryString;
 
   const track: string | undefined = query.title;
@@ -146,10 +146,10 @@ const searchDiscogsDatabase = async (req: Request, res: Response, _next: NextFun
     console.log('no user or no search params');
     res.send('error');
   }
-};
+});
 
 export default {
   showPlaylists,
   getPlaylist,
   searchDiscogsDatabase
-}
+};

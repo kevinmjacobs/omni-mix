@@ -55,6 +55,12 @@ const loginUser = async (req: Request, res: Response, _next: NextFunction) => {
   }
 };
 
+const logoutUser = async (req: Request, res: Response, _next: NextFunction) => {
+  req.session.email = undefined;
+  req.session.loggedIn = false;
+  res.redirect('login');
+}
+
 const redirectURI = 'http://localhost:3000/auth/spotify_callback';
 const authorizeURL = 'https://accounts.spotify.com/authorize';
 
@@ -75,5 +81,6 @@ export default {
   showLogin,
   showCreateUser,
   createUser,
-  loginUser
+  loginUser,
+  logoutUser
 }
