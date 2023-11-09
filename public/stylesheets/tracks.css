@@ -1,10 +1,16 @@
 #track-table {
-  border-right: 1px solid var(--black);
-  display: inline-block;
-  height: 100vh;
-  margin-right: 15px;
+  display: block;
+  top: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+#track-table-body {
+  display: block;
+  position: relative;
   overflow: auto;
-  width: 75%;
+  max-height: calc(100vh - 40px);
+  padding-right: 6px;
 }
 
 .track-container {

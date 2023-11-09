@@ -8,34 +8,34 @@
   <title>Tracks</title>
 </head>
 <body>
-  <div style="display: inline;">
+  <%- include('./partials/nav'); %>
+  <div>
     <table id="track-table">
-      <tr class="track-container">
+      <!-- <tr class="track-container">
         <th>Title</th>
         <th>Artist</th>
         <th>Album</th>
         <th>Duration</th>
-      </tr>
-      <% items.forEach((item) => { %>
-        <tr
+      </tr> -->
+      <tbody id="track-table-body">
+        <% items.forEach((item) => { %>
+          <tr
           class="track-item"
           data-track-title="<%= item.track.name %>"
           data-track-artists="<%= item.track.artistNames %>"
           data-track-album="<%= item.track.album.name %>"
-          onclick="searchDiscogs(this)"
-        >
+          >
+          <!-- onclick="searchDiscogs(this)" -->
           <td class="track-name"><%= item.track.name %></td>
           <td class="track-artist"><%= item.track.artistNames %></td>
           <td class="track-album"><%= item.track.album.name %></td>
           <td class="track-duration"><%= item.track.duration_ms %></td>
         </tr>
-      <% }); %>
+        <% }); %>
+      </tbody>
     </table>
-    <div id="search-column">
-      <div id="search-container"></div>
-    </div>
   </div>
-  <script type="text/javascript">
+  <!-- <script type="text/javascript">
     const searchContainer = document.getElementById('search-container');
 
     function searchDiscogs(trackElement) {
@@ -93,6 +93,6 @@
       document.createElement('div'),
       { innerHTML: "No results from search" }
     );
-  </script>
+  </script> -->
 </body>
 </html>
