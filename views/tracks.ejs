@@ -9,14 +9,16 @@
 </head>
 <body>
   <%- include('./partials/nav'); %>
-  <div>
+  <div id="track-table-container">
     <table id="track-table">
-      <!-- <tr class="track-container">
-        <th>Title</th>
-        <th>Artist</th>
-        <th>Album</th>
-        <th>Duration</th>
-      </tr> -->
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Artist</th>
+          <th>Album</th>
+          <th>Duration</th>
+        </tr>
+      </thead>
       <tbody id="track-table-body">
         <% items.forEach((item) => { %>
           <tr
