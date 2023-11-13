@@ -53,10 +53,10 @@ const getPlaylist = memoize(async (req: Request, res: Response, _next: NextFunct
         });
       }
     } else {
-      res.redirect('/playlists');
+      res.redirect('index');
     }
   } else {
-    res.redirect('/playlists');
+    res.redirect('index');
   }
 });
 
