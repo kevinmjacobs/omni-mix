@@ -1,5 +1,5 @@
 #track-table-container {
-  max-height: calc(100% - 40px);
+  max-height: calc(100% - 60px);
   overflow: hidden;
   position: fixed;
   top: 40px;
@@ -8,15 +8,15 @@
 
 #track-table {
   font-size: 11px;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 80px);
   padding: 10px 0 ;
   width: 100%;
 }
 
 #track-table-body {
-  max-height: calc(100vh - 95px);
+  max-height: calc(100vh - 110px);
   overflow: auto;
-  padding: 5px;
+  padding: 0 5px;
   position: relative;
 }
 
@@ -39,9 +39,22 @@
 }
 
 #search-container {
-  height: calc(100vh - 20px);
-  overflow: auto;
-  position: sticky;
+  background-color: var(--green);
+  bottom: 0;
+  color: var(--white);
+  display: inline-block;
+  line-height: 20px;
+  position: fixed;
+  text-align: center;
+  width: 100%;
+}
+
+.search-container-minimized {
+  height: 20px;
+}
+
+.search-container-expanded {
+  height: 250px;
 }
 
 th {

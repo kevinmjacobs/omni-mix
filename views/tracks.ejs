@@ -42,8 +42,9 @@
           </div>
           <% }); %>
         </div>
-      </table>
+      </div>
     </div>
+    <div id="search-container" class="search-container-minimized">^</div>
   </div>
   <script type="text/javascript">
     function searchDiscogs(trackElement) {
@@ -103,6 +104,17 @@
       document.createElement('div'),
       { innerHTML: "No results from search" }
     );
+
+    const searchContainerToggle = document.getElementById('search-container');
+    searchContainerToggle.onclick = function(e) {
+      if (e.target.classList.contains('search-container-minimized')) {
+        e.target.classList.remove('search-container-minimized');
+        e.target.classList.add('search-container-expanded');
+      } else if (e.target.classList.contains('search-container-expanded')) {
+        e.target.classList.remove('search-container-expanded');
+        e.target.classList.add('search-container-minimized');
+      }
+    }
   </script>
 </body>
 </html>
